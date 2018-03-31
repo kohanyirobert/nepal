@@ -32,6 +32,7 @@
   copy:
     src: index.html
     dest: /var/www/html/
+
 - name: creating site for
   template:
     src: site.j2
