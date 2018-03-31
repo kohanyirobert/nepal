@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+server {
+        root /var/www/html;
+        server_name {{ freedns_domains | map(attribute='name') | join(' ') }};
+        location / {
+                try_files $uri $uri/ =404;
+        }
+}

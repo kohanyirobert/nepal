@@ -1,0 +1,14 @@
+- name: making sure we're provisiong debian
+  fail:
+    msg: can provision debian only
+  when: ansible_distribution != 'Debian'
+
+- name: making sure we're provisiong stretch  
+  fail:
+    msg: can provision stretch only
+  when: ansible_distribution_release != 'stretch'
+
+- name: making sure we're provisiong armv7
+  fail:
+    msg: can provision armv7 only
+  when: ansible_architecture is not match('armv7.*')

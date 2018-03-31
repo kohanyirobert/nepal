@@ -1,0 +1,5 @@
+= About
+
+Run the playbook like `ansible-playbook -i hosts.ini site.yml`.
+
+Configure `vault_password_file` in `/etc/ansible/ansible.cfg` or `~/.ansible.cfg`.

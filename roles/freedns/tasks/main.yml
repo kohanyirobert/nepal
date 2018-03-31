@@ -1,0 +1,2 @@
+- include: freedns.yml
+  tags: freedns

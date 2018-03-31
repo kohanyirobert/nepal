@@ -1,0 +1,56 @@
+- name: installing nginx
+  apt:
+    update_cache: yes
+    name: nginx
+
+- name: finding enabled sites
+  find:
+    paths: /etc/nginx/sites-enabled
+    file_type: link
+    excludes: '{{ freedns_main_domain.name }}'
+  register: enabled_sites
+
+- name: removing enabled sites
+  file:
+    path: '{{ item.path }}'
+    state: absent
+  with_items: '{{ enabled_sites.files }}'
+
+- name: finding html files
+  find:
+    paths: /var/www/html/
+    file_type: file
+  register: html_files
+
+- name: removing html files
+  file:
+    path: '{{ item.path }}'
+    state: absent
+  with_items: '{{ html_files.files }}'
+
+- name: copying index.html file
+  copy:
+    src: index.html
+    dest: /var/www/html/
+- name: creating site for
+  template:
+    src: site.j2
+    dest: /etc/nginx/sites-available/{{ freedns_main_domain.name }}
+
+- name: enabling site
+  file:
+    src: /etc/nginx/sites-available/{{ freedns_main_domain.name }}
+    path: /etc/nginx/sites-enabled/{{ freedns_main_domain.name }}
+    state: link
+
+- name: making sure nginx is started
+  service:
+    name: nginx
+    state: started
+
+- name: checking if port 80 is open
+  wait_for:
+    host: '{{ item.name }}'
+    port: 80
+    timeout: 3
+  with_items: '{{ freedns_domains }}'

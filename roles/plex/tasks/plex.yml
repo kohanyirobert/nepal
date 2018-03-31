@@ -1,0 +1,18 @@
+- name: making sure we can use https with apt
+  apt:
+    update_cache: yes
+    name: apt-transport-https
+
+- name: importing apt public key for plex
+  apt_key:
+    url: https://dev2day.de/pms/dev2day-pms.gpg.key
+
+- name: adding apt sources list entry for plex
+  apt_repository:
+    repo: deb https://dev2day.de/pms/ stretch main
+    filename: pms
+
+- name: installing plex
+  apt:
+    update_cache: yes
+    name: plexmediaserver-installer

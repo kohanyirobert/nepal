@@ -1,0 +1,7 @@
+- hosts: nepal
+  roles:
+    - precondition
+    - freedns
+    - plex
+    - nginx
+    - certbot

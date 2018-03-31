@@ -1,0 +1,6 @@
+- name: creating dynamic dns update cron jobs
+  cron:
+    name: dynamic dns update cron script for {{ item.name }}
+    minute: 2,7,12,17,22,27,32,37,42,47,52,57
+    value: sleep 53 ; curl -s http://sync.afraid.org/u/{{ item.ddns_id }}/ >> /tmp/freedns_{{ item.name }}.log 2>/dev/null
+  with_items: '{{ freedns_domains }}'

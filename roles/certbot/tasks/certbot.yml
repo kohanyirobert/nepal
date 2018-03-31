@@ -1,0 +1,44 @@
+- name: installing certs
+  command: >
+    certbot
+    --nginx
+    --non-interactive
+    --agree-tos
+    --no-eff-email
+    --email {{ email }}
+    --domains {{ freedns_domains | map(attribute='name') | join(',') }}
+    --redirect
+
+- name: creating cert renewal cron jobs
+  cron:
+    name: cert renewal cron job for {{ item.name }}
+    special_time: daily
+    value: /usr/bin/certbot renew --domain {{ item.name }} --post-hook '/bin/systemctl reload nginx' >> /tmp/certbot_{{ item.name }}.log
+  with_items: '{{ freedns_domains }}'
+
+- name: making sure nginx is reloaded
+  service:
+      name: nginx
+      state: reloaded
+
+- name: checking if port 443 is open
+  wait_for:
+    host: '{{ item.name }}'
+    port: 443
+    timeout: 3
+  with_items: '{{ freedns_domains }}'
+
+- name: sending requesst to check if certificate is valid
+  uri:
+    url: http://{{ item.name }}/
+  with_items: '{{ freedns_domains }}'
+  register: responses
+
+- name: making sure http requests are redirected to https
+  fail:
+    msg: http request sent to {{ result.item.name }} should have been redirected to https
+  when: result.redirected and result.url is not match('https://' + result.item.name + '/')
+  with_items: '{{ responses.results }}'
+  loop_control:
+    loop_var: result
+    label: '{{ result.item.name }}'
