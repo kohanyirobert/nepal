@@ -11,7 +11,7 @@ server {
         }
         location /RPC2 {
                 include scgi_params;
-                scgi_pass localhost:5000;
+                scgi_pass unix:/run/rtorrent/rtorrent.sock;
         }
         location ~ \.php$ {
                include snippets/fastcgi-php.conf;

@@ -1,3 +1,2 @@
 - include: rtorrent.yml
-  tags:
-    - rtorrent
+  tags: rtorrent

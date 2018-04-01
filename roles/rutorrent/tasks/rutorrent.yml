@@ -17,17 +17,10 @@
     version: '{{ rutorrent_git_version }}'
     force: yes
 
-- name: fixing path to externals in config.php
-  replace:
-    path: '{{ web_root }}/rutorrent/conf/config.php'
-    regexp: "^(.*?\"{{ item }}\"\\s+=>\\s+')(',.*)$"
-    replace: '\1/usr/bin/{{ item }}\2'
-    before: 'pathToExternals = array'
-    after: '\);'
-  with_items:
-    - php
-    - curl
-    - stat
+- name: creating rutorrent config.php
+  template:
+    src: config.php.j2
+    dest: '{{ web_root }}/rutorrent/conf/config.php'
 
 - name: adding web user to torrent group
   user:
@@ -39,7 +32,7 @@
 
 - name: allowing access for torrent group
   file:
-    path: '{{ web_root }}/rutorrent/share'
+    path: '{{ web_root }}/  rutorrent/share'
     group: '{{ torrent_group }}'
     mode: u=rwx,g=rwx,o=rx
     state: directory

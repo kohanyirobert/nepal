@@ -3,7 +3,7 @@
     - precondition
     - freedns
     - plex
+    - rtorrent
     - nginx
     - certbot
-    - rtorrent
     - rutorrent
