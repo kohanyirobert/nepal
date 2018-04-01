@@ -5,16 +5,15 @@
     --non-interactive
     --agree-tos
     --no-eff-email
-    --email {{ email }}
+    --email {{ letsencrypt_email }}
     --domains {{ freedns_domains | map(attribute='name') | join(',') }}
     --redirect
 
-- name: creating cert renewal cron jobs
+- name: creating cert renewal cron job
   cron:
-    name: cert renewal cron job for {{ item.name }}
+    name: cert renewal cron job for {{ freedns_main_domain.name }}
     special_time: daily
-    value: /usr/bin/certbot renew --domain {{ item.name }} --post-hook '/bin/systemctl reload nginx' >> /tmp/certbot_{{ item.name }}.log
-  with_items: '{{ freedns_domains }}'
+    value: /usr/bin/certbot renew --post-hook '/bin/systemctl reload nginx' >> /tmp/certbot_{{ freedns_main_domain.name }}.log
 
 - name: making sure nginx is reloaded
   service:
@@ -28,7 +27,7 @@
     timeout: 3
   with_items: '{{ freedns_domains }}'
 
-- name: sending requesst to check if certificate is valid
+- name: sending request to check if certificate is valid
   uri:
     url: http://{{ item.name }}/
   with_items: '{{ freedns_domains }}'

@@ -5,3 +5,5 @@
     - plex
     - nginx
     - certbot
+    - rtorrent
+    - rutorrent

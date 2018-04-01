@@ -1,0 +1,43 @@
+- name: adding torrent group
+  group:
+    name: '{{ torrent_group }}'
+
+- name: adding rtorrent group
+  group:
+    name: '{{ rtorrent_group }}'
+
+- name: adding rtorrent user
+  user:
+    name: '{{ rtorrent_user }}'
+    group: '{{ rtorrent_group }}'
+    groups:
+      - '{{ rtorrent_group }}'
+      - '{{ torrent_group }}'
+
+- name: installing rtorrent
+  apt:
+    name: rtorrent
+
+- name: creating rtorrent configuration
+  template:
+    src: .rtorrent.rc.j2
+    dest: /home/{{ rtorrent_user }}/.rtorrent.rc
+    owner: '{{ rtorrent_user }}'
+    group: '{{ rtorrent_group }}'
+
+- name: creating .rtorrent folder
+  file:
+    path: /home/{{ rtorrent_user }}/.rtorrent
+    owner: '{{ rtorrent_user }}'
+    group: '{{ rtorrent_group }}'
+    state: directory
+
+- name: creating rtorrent service
+  template:
+    src: rtorrent.service.j2
+    dest: /etc/systemd/system/rtorrent.service
+
+- name: making sure rtorrent is started
+  service:
+    name: rtorrent
+    state: started

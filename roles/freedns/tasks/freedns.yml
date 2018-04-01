@@ -1,3 +1,7 @@
+- name: changing hostname to main domain name
+  hostname:
+    name: '{{ freedns_main_domain.name }}'
+
 - name: creating dynamic dns update cron jobs
   cron:
     name: dynamic dns update cron script for {{ item.name }}
