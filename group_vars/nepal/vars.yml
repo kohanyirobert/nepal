@@ -1,14 +1,23 @@
 letsencrypt_email: '{{ vault_letsencrypt_email }}'
-web_root: '{{ vault_web_root }}'
-web_user: '{{ vault_web_user }}'
-web_group: '{{ vault_web_group }}'
+
+rtorrent_www_shared_group: '{{ vault_rtorrent_www_shared_group }}'
+
 rtorrent_user: '{{ vault_rtorrent_user }}'
 rtorrent_group: '{{ vault_rtorrent_group }}'
-torrent_group: '{{ vault_torrent_group }}'
+rtorrent_port: '{{ vault_rtorrent_port }}'
+
+www_web_root: '{{ vault_www_web_root }}'
+www_user: '{{ vault_www_user }}'
+www_group: '{{ vault_www_group }}'
+
+rutorrent_dir: '{{ vault_rutorrent_dir }}'
 rutorrent_user: '{{ vault_rutorrent_user }}'
-rutorrent_pass: '{{ vault_rutorrent_pass }}'
+rutorrent_group: '{{ vault_rutorrent_group }}'
 rutorrent_git_repo: '{{ vault_rutorrent_git_repo }}'
 rutorrent_git_version: '{{ vault_rutorrent_git_version }}'
+rutorrent_login_user: '{{ vault_rutorrent_login_user }}'
+rutorrent_login_pass: '{{ vault_rutorrent_login_pass }}'
+
 storage_device_mount_point: '{{ vault_storage_device_mount_point }}'
 storage_device_uuid: '{{ vault_storage_device_uuid }}'
 storage_device_fstype: '{{ vault_storage_device_fstype }}'

@@ -1,16 +1,5 @@
-- name: making sure php7.0-fpm is available for nginx
-  apt:
-    name:
-      - php7.0-fpm
-
-- name: making sure php7.0-fpm is started
-  service:
-    name: php7.0-fpm
-    state: started
-
 - name: installing nginx
   apt:
-    update_cache: yes
     name: nginx
 
 - name: finding enabled sites
@@ -28,7 +17,7 @@
 
 - name: finding html files
   find:
-    paths: '{{ web_root }}'
+    paths: '{{ www_web_root }}'
     file_type: file
   register: html_files
 
@@ -41,7 +30,7 @@
 - name: copying index.html file
   copy:
     src: index.html
-    dest: '{{ web_root }}'
+    dest: '{{ www_web_root }}'
 
 - name: creating site for
   template:

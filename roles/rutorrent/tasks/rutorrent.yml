@@ -5,35 +5,31 @@
 - name: creating rutorrent user and password for nginx
   htpasswd:
     path: /etc/nginx/.htpasswd
-    name: '{{ rutorrent_user }}'
-    password: '{{ rutorrent_pass }}'
-    group: '{{ web_group }}'
+    name: '{{ rutorrent_login_user }}'
+    password: '{{ rutorrent_login_pass }}'
     mode: u=rw,g=r,o=
 
 - name: cloning rutorrent repository
   git:
     repo: '{{ rutorrent_git_repo }}'
-    dest: '{{ web_root }}/rutorrent'
+    dest: '{{ rutorrent_dir }}'
     version: '{{ rutorrent_git_version }}'
     force: yes
 
 - name: creating rutorrent config.php
   template:
     src: config.php.j2
-    dest: '{{ web_root }}/rutorrent/conf/config.php'
+    dest: '{{ rutorrent_dir }}/conf/config.php'
 
-- name: adding web user to torrent group
-  user:
-    name: '{{ web_user }}'
-    group: '{{ web_group }}'
-    groups:
-      - '{{ web_group }}'
-      - '{{ torrent_group }}'
+- name: initializing plugins for rutorrent user before applying correct owner and group permissions
+  command: >
+    php {{ rutorrent_dir }}/php/initplugins.php {{ rutorrent_login_user }}
 
 - name: allowing access for torrent group
   file:
-    path: '{{ web_root }}/  rutorrent/share'
-    group: '{{ torrent_group }}'
+    path: '{{ rutorrent_dir }}/share'
+    owner: '{{ www_user }}'
+    group: '{{ rtorrent_www_shared_group }}'
     mode: u=rwx,g=rwx,o=rx
     state: directory
     recurse: yes

@@ -1,0 +1,14 @@
+- name: making sure php-fpm is available for nginx
+  apt:
+    name:
+      - php7.0-fpm
+
+- name: making sure php-fpm is started
+  service:
+    name: php7.0-fpm
+    state: started
+
+- name: creating php-fpm pool configuration for rutorrent
+  template:
+    src: pool.conf.j2
+    dest: /etc/php/7.0/fpm/pool.d/{{ rutorrent_user }}.conf

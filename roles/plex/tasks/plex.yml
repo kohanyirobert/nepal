@@ -1,6 +1,5 @@
 - name: making sure we can use https with apt
   apt:
-    update_cache: yes
     name: apt-transport-https
 
 - name: importing apt public key for plex

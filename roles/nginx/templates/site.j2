@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 server {
-        root /var/www/html;
+        root {{ www_web_root }};
         server_name {{ freedns_domains | map(attribute='name') | join(' ') }};
         location / {
                 try_files $uri $uri/ =404;
@@ -11,10 +11,10 @@ server {
         }
         location /RPC2 {
                 include scgi_params;
-                scgi_pass unix:/run/rtorrent/rtorrent.sock;
+                scgi_pass unix:/var/run/rtorrent/rtorrent.sock;
         }
         location ~ \.php$ {
                include snippets/fastcgi-php.conf;
-               fastcgi_pass unix:/var/run/php/php7.0-fpm.sock;
+               fastcgi_pass unix:/var/run/php/php7.0-fpm-{{ rutorrent_user }}.sock;
         }
 }

@@ -20,7 +20,7 @@ execute.throw = bash, -c, (cat,\
     "&& mkdir -p .session download log watch/{load,start}")
 
 # Listening port for incoming peer traffic (fixed; you can also randomize it)
-network.port_range.set = 50000-50000
+network.port_range.set = {{ rtorrent_port }}-{{ rtorrent_port }}
 network.port_random.set = no
 
 # Tracker-less torrent and UDP tracker support
@@ -33,11 +33,11 @@ trackers.use_udp.set = no
 throttle.max_uploads.set = 100
 throttle.max_uploads.global.set = 250
 
-throttle.min_peers.normal.set = 20
-throttle.max_peers.normal.set = 60
-throttle.min_peers.seed.set = 30
-throttle.max_peers.seed.set = 80
-trackers.numwant.set = 80
+throttle.min_peers.normal.set = 10
+throttle.max_peers.normal.set = 30
+throttle.min_peers.seed.set = 10
+throttle.max_peers.seed.set = 20
+trackers.numwant.set = 40
 
 protocol.encryption.set = allow_incoming,try_outgoing,enable_retry
 
@@ -50,7 +50,7 @@ network.max_open_sockets.set = 300
 
 # Memory resource usage (increase if you have a large number of items loaded,
 # and/or the available resources to spend)
-pieces.memory.max.set = 1800M
+pieces.memory.max.set = 900M
 network.xmlrpc.size_limit.set = 4M
 
 # Basic operational settings (no need to change these)
@@ -96,8 +96,9 @@ log.add_output = "info", "log"
 ##log.add_output = "tracker_debug", "log"
 
 # XMLRPC socket for ruTorrent.
+execute.nothrow = rm, /var/run/rtorrent/rtorrent.sock
 scgi_local = /var/run/rtorrent/rtorrent.sock
-schedule2 = scgi_permission_mod, 0, 0, "execute.nothrow = chmod, \"u=rwx,g=rwx,o=\", /var/run/rtorrent/rtorrent.sock"
-schedule2 = scgi_permission_grp, 0, 0, "execute.nothrow = chgrp, {{ torrent_group }}, /var/run/rtorrent/rtorrent.sock"
+schedule2 = socket_chmod, 0, 0, "execute.nothrow = chmod, \"u=rw,g=rw,o=\", /var/run/rtorrent/rtorrent.sock"
+schedule2 = socket_chgrp, 0, 0, "execute.nothrow = chgrp, {{ rtorrent_www_shared_group }}, /var/run/rtorrent/rtorrent.sock"
 
 ### END of rtorrent.rc ###

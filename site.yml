@@ -3,6 +3,7 @@
     - precondition
     - freedns
     - plex
+    - php-fpm
     - rtorrent
     - nginx
     - certbot

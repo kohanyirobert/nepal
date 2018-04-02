@@ -1,3 +1,7 @@
+- name: updating apt cache before start
+  apt:
+    update_cache: yes
+
 - name: making sure we're provisiong debian
   fail:
     msg: can provision debian only
@@ -13,10 +17,33 @@
     msg: can provision armv7 only
   when: ansible_architecture is not match('armv7.*')
 
+- name: creating rtorrent/www shared group
+  group:
+    name: '{{ rtorrent_www_shared_group }}'
+
+- name: creating www user
+  user:
+    name: '{{ www_user }}'
+    groups:
+      - '{{ rtorrent_www_shared_group }}'
+
+- name: creating rtorrent user
+  user:
+    name: '{{ rtorrent_user }}'
+    groups:
+      - '{{ rtorrent_www_shared_group }}'
+
+- name: creating rutorrent user
+  user:
+    name: '{{ rutorrent_user }}'
+    create_home: no
+    groups:
+      - '{{ rtorrent_www_shared_group }}'
+
 - name: creating mount point for storage device
   file:
     path: '{{ vault_storage_device_mount_point }}'
-    group: '{{ torrent_group }}'
+    group: '{{ rtorrent_www_shared_group }}'
     state: directory
 
 - name: mounting storage device by uuid to mount point
