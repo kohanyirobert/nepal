@@ -7,13 +7,13 @@
     src: .rtorrent.rc.j2
     dest: /home/{{ rtorrent_user }}/.rtorrent.rc
     owner: '{{ rtorrent_user }}'
-    group: '{{ rtorrent_group }}'
+    group: '{{ rtorrent_www_shared_group }}'
 
 - name: creating rtorrent folder
   file:
     path: /home/{{ rtorrent_user }}/rtorrent
     owner: '{{ rtorrent_user }}'
-    group: '{{ rtorrent_group }}'
+    group: '{{ rtorrent_www_shared_group }}'
     state: directory
 
 - name: creating folder for scgi sock

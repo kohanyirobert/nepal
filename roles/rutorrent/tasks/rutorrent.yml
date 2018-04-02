@@ -25,9 +25,9 @@
   command: >
     php {{ rutorrent_dir }}/php/initplugins.php {{ rutorrent_login_user }}
 
-- name: allowing access for torrent group
+- name: allowing access for rtorrent/www shared group
   file:
-    path: '{{ rutorrent_dir }}/share'
+    path: '{{ rutorrent_dir }}'
     owner: '{{ www_user }}'
     group: '{{ rtorrent_www_shared_group }}'
     mode: u=rwx,g=rwx,o=rx

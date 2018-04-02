@@ -43,10 +43,10 @@
     path: /etc/nginx/sites-enabled/{{ freedns_main_domain.name }}
     state: link
 
-- name: making sure nginx is started
+- name: making sure nginx is restarted
   service:
     name: nginx
-    state: started
+    state: restarted
 
 - name: checking if port 80 is open
   wait_for:

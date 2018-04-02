@@ -9,7 +9,7 @@ ExecStart=/usr/bin/screen -d -m -fa -S rtorrent /usr/bin/rtorrent
 ExecStop=/usr/bin/killall --wait --signal SIGINT /usr/bin/rtorrent
 WorkingDirectory=/home/{{ rtorrent_user }}
 User={{ rtorrent_user }}
-Group={{ rtorrent_group }}
+Group={{ rtorrent_www_shared_group }}
 
 [Install]
 WantedBy=multi-user.target

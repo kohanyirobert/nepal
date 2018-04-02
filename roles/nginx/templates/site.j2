@@ -15,6 +15,6 @@ server {
         }
         location ~ \.php$ {
                include snippets/fastcgi-php.conf;
-               fastcgi_pass unix:/var/run/php/php7.0-fpm-{{ rutorrent_user }}.sock;
+               fastcgi_pass unix:/var/run/php/php7.0-fpm-rutorrent.sock;
         }
 }
