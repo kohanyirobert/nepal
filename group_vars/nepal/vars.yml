@@ -2,6 +2,10 @@ letsencrypt_email: '{{ vault_letsencrypt_email }}'
 
 rtorrent_www_shared_group: '{{ vault_rtorrent_www_shared_group }}'
 
+rtorrent_plex_shared_group: '{{ vault_rtorrent_plex_shared_group }}'
+
+plex_user: '{{ vault_plex_user }}'
+
 rtorrent_user: '{{ vault_rtorrent_user }}'
 rtorrent_port: '{{ vault_rtorrent_port }}'
 

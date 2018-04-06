@@ -28,21 +28,33 @@
     groups:
       - '{{ rtorrent_www_shared_group }}'
 
-- name: creating rtorrent user and adding to rtorrent/www shared group
+- name: creating rtorrent user and adding to rtorrent/www and rtorrent/plex shared groups
   user:
     name: '{{ rtorrent_user }}'
     group: '{{ rtorrent_www_shared_group }}'
+    groups:
+      - '{{ rtorrent_www_shared_group }}'
+      - '{{ rtorrent_plex_shared_group }}'
 
 - name: creating mount point for storage device
   file:
-    path: '{{ vault_storage_device_mount_point }}'
-    group: '{{ rtorrent_www_shared_group }}'
+    path: '{{ item }}'
+    group: '{{ rtorrent_plex_shared_group }}'
+    mode: u=rwx,g=rwx,o=
     state: directory
+  with_items:
+    - '{{ storage_device_mount_point }}'
+    - '{{ storage_device_mount_point }}/Downloads'
+    - '{{ storage_device_mount_point }}/Plex'
+    - '{{ storage_device_mount_point }}/Plex/szinkronos-filmek'
+    - '{{ storage_device_mount_point }}/Plex/szinkronos-sorozatok'
+    - '{{ storage_device_mount_point }}/Plex/feliratos-filmek'
+    - '{{ storage_device_mount_point }}/Plex/feliratos-sorozatok'
 
 - name: mounting storage device by uuid to mount point
   mount:
-    path: '{{ vault_storage_device_mount_point }}'
-    src: UUID={{ vault_storage_device_uuid }}
-    fstype: '{{ vault_storage_device_fstype }}'
+    path: '{{ storage_device_mount_point }}'
+    src: UUID={{ storage_device_uuid }}
+    fstype: '{{ storage_device_fstype }}'
     boot: yes
     state: mounted

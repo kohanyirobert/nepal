@@ -15,3 +15,19 @@
   apt:
     update_cache: yes
     name: plexmediaserver-installer
+
+- name: creating rtorrent/plex shared group
+  group:
+    name: '{{ rtorrent_plex_shared_group }}'
+
+- name: adding plex user to rtorrent/plex shared group
+  user:
+    name: '{{ plex_user }}'
+    append: yes
+    groups:
+      - '{{ rtorrent_plex_shared_group }}'
+
+- name: restarting plex service
+  service:
+    name: plexmediaserver
+    state: restarted
