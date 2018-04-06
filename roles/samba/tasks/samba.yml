@@ -1,0 +1,21 @@
+- name: installing samba
+  apt:
+    name: samba
+
+- name: creating samba config
+  template:
+    src: samba.conf.j2
+    dest: /etc/samba/smb.conf
+
+- name: restarting samba
+  service:
+    name: smbd
+    state: restarted
+
+- name: checking if samba ports are open
+  wait_for:
+    host: '{{ freedns_main_domain.name }}'
+    port: '{{ item }}'
+    timeout: 3
+  with_items:
+    - 445 # TCP
