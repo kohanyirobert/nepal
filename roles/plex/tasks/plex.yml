@@ -27,6 +27,12 @@
     groups:
       - '{{ rtorrent_plex_shared_group }}'
 
+- name: making sure plex is started with the rtorrent/plex shared group
+  lineinfile:
+    path: /lib/systemd/system/plexmediaserver.service
+    regexp: ^Group={{ plex_user }}
+    line: Group={{ rtorrent_plex_shared_group }}
+
 - name: restarting plex service
   service:
     name: plexmediaserver

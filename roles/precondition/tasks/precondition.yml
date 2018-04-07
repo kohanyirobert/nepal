@@ -1,5 +1,6 @@
-- name: updating apt cache before start
+- name: installing acl and updating apt cache before start
   apt:
+    name: acl
     update_cache: yes
 
 - name: making sure we're provisiong debian
@@ -38,18 +39,10 @@
 
 - name: creating mount point for storage device
   file:
-    path: '{{ item }}'
+    path: '{{ storage_device_mount_point }}'
     group: '{{ rtorrent_plex_shared_group }}'
-    mode: u=rwx,g=rwx,o=
+    mode: u=rwx,g=rwxs,o=
     state: directory
-  with_items:
-    - '{{ storage_device_mount_point }}'
-    - '{{ storage_device_mount_point }}/Downloads'
-    - '{{ storage_device_mount_point }}/Plex'
-    - '{{ storage_device_mount_point }}/Plex/szinkronos-filmek'
-    - '{{ storage_device_mount_point }}/Plex/szinkronos-sorozatok'
-    - '{{ storage_device_mount_point }}/Plex/feliratos-filmek'
-    - '{{ storage_device_mount_point }}/Plex/feliratos-sorozatok'
 
 - name: mounting storage device by uuid to mount point
   mount:
@@ -58,3 +51,18 @@
     fstype: '{{ storage_device_fstype }}'
     boot: yes
     state: mounted
+
+- name: setting default permissions for mount point
+  acl:
+    name: '{{ storage_device_mount_point }}'
+    default: yes
+    etype: group
+    permissions: rwx
+    state: present
+
+- name: creating directories on mount point
+  file:
+    path: '{{ item }}'
+    group: '{{ rtorrent_plex_shared_group }}'
+    state: directory
+  with_items: '{{ storage_device_directories }}'
