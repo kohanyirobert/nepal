@@ -16,22 +16,18 @@
     update_cache: yes
     name: plexmediaserver-installer
 
-- name: creating rtorrent/plex shared group
-  group:
-    name: '{{ rtorrent_plex_shared_group }}'
-
-- name: adding plex user to rtorrent/plex shared group
+- name: adding plex user to storage shared group
   user:
     name: '{{ plex_user }}'
     append: yes
     groups:
-      - '{{ rtorrent_plex_shared_group }}'
+      - '{{ shared_group }}'
 
-- name: making sure plex is started with the rtorrent/plex shared group
+- name: making sure plex is started under shared group permissions
   lineinfile:
     path: /lib/systemd/system/plexmediaserver.service
-    regexp: ^Group={{ plex_user }}
-    line: Group={{ rtorrent_plex_shared_group }}
+    regexp: ^Group=.*$
+    line: Group={{ shared_group }}
 
 - name: restarting plex service
   service:

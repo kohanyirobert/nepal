@@ -1,8 +1,7 @@
 letsencrypt_email: '{{ vault_letsencrypt_email }}'
 
-rtorrent_www_shared_group: '{{ vault_rtorrent_www_shared_group }}'
-
-rtorrent_plex_shared_group: '{{ vault_rtorrent_plex_shared_group }}'
+shared_group: '{{ vault_shared_group }}'
+shared_group_id: '{{ vault_shared_group_id }}'
 
 plex_user: '{{ vault_plex_user }}'
 
@@ -17,7 +16,6 @@ rutorrent_git_repo: '{{ vault_rutorrent_git_repo }}'
 rutorrent_git_version: '{{ vault_rutorrent_git_version }}'
 rutorrent_login_user: '{{ vault_rutorrent_login_user }}'
 rutorrent_login_pass: '{{ vault_rutorrent_login_pass }}'
-
 storage_device_mount_point: '{{ vault_storage_device_mount_point }}'
 storage_device_uuid: '{{ vault_storage_device_uuid }}'
 storage_device_fstype: '{{ vault_storage_device_fstype }}'

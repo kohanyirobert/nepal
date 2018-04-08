@@ -25,11 +25,11 @@
   command: >
     php {{ rutorrent_dir }}/php/initplugins.php {{ rutorrent_login_user }}
 
-- name: allowing access for rtorrent/www shared group
+- name: allowing access for shared group
   file:
     path: '{{ rutorrent_dir }}'
     owner: '{{ www_user }}'
-    group: '{{ rtorrent_www_shared_group }}'
+    group: '{{ shared_group }}'
     mode: u=rwx,g=rwx,o=rx
     state: directory
     recurse: yes

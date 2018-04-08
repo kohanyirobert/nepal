@@ -2,6 +2,13 @@
   apt:
     name: nginx
 
+- name: adding www user to shared group
+  user:
+    name: '{{ www_user }}'
+    append: yes
+    groups:
+      - '{{ shared_group }}'
+
 - name: finding enabled sites
   find:
     paths: /etc/nginx/sites-enabled

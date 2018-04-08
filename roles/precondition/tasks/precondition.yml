@@ -1,6 +1,5 @@
-- name: installing acl and updating apt cache before start
+- name: updating apt cache before start
   apt:
-    name: acl
     update_cache: yes
 
 - name: making sure we're provisiong debian
@@ -8,7 +7,7 @@
     msg: can provision debian only
   when: ansible_distribution != 'Debian'
 
-- name: making sure we're provisiong stretch  
+- name: making sure we're provisiong stretch
   fail:
     msg: can provision stretch only
   when: ansible_distribution_release != 'stretch'
@@ -18,51 +17,7 @@
     msg: can provision armv7 only
   when: ansible_architecture is not match('armv7.*')
 
-- name: creating rtorrent/www shared group
+- name: creating shared group
   group:
-    name: '{{ rtorrent_www_shared_group }}'
-
-- name: adding www user to rtorrent/www shared group
-  user:
-    name: '{{ www_user }}'
-    append: yes
-    groups:
-      - '{{ rtorrent_www_shared_group }}'
-
-- name: creating rtorrent user and adding to rtorrent/www and rtorrent/plex shared groups
-  user:
-    name: '{{ rtorrent_user }}'
-    group: '{{ rtorrent_www_shared_group }}'
-    groups:
-      - '{{ rtorrent_www_shared_group }}'
-      - '{{ rtorrent_plex_shared_group }}'
-
-- name: creating mount point for storage device
-  file:
-    path: '{{ storage_device_mount_point }}'
-    group: '{{ rtorrent_plex_shared_group }}'
-    mode: u=rwx,g=rwxs,o=
-    state: directory
-
-- name: mounting storage device by uuid to mount point
-  mount:
-    path: '{{ storage_device_mount_point }}'
-    src: UUID={{ storage_device_uuid }}
-    fstype: '{{ storage_device_fstype }}'
-    boot: yes
-    state: mounted
-
-- name: setting default permissions for mount point
-  acl:
-    name: '{{ storage_device_mount_point }}'
-    default: yes
-    etype: group
-    permissions: rwx
-    state: present
-
-- name: creating directories on mount point
-  file:
-    path: '{{ item }}'
-    group: '{{ rtorrent_plex_shared_group }}'
-    state: directory
-  with_items: '{{ storage_device_directories }}'
+    name: '{{ shared_group }}'
+    gid: '{{ shared_group_id }}'

@@ -1,0 +1,34 @@
+- name: installing acl
+  apt:
+    name: acl
+
+- name: creating mount point for storage device
+  file:
+    path: '{{ storage_device_mount_point }}'
+    group: '{{ shared_group }}'
+    mode: u=rwx,g=rwx,o=
+    state: directory
+
+- name: mounting storage device by uuid to mount point
+  mount:
+    path: '{{ storage_device_mount_point }}'
+    src: UUID={{ storage_device_uuid }}
+    fstype: '{{ storage_device_fstype }}'
+    opts: defaults,acl
+    boot: yes
+    state: mounted
+
+- name: setting default permissions for mount point
+  acl:
+    name: '{{ storage_device_mount_point }}'
+    default: yes
+    etype: group
+    permissions: rwx
+    state: present
+
+- name: creating directories on mount point
+  file:
+    path: '{{ item }}'
+    group: '{{ shared_group }}'
+    state: directory
+  with_items: '{{ storage_device_directories }}'

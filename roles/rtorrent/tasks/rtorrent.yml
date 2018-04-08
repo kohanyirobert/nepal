@@ -1,3 +1,10 @@
+- name: creating rtorrent user and adding to shared group
+  user:
+    name: '{{ rtorrent_user }}'
+    append: yes
+    groups:
+      - '{{ shared_group }}'
+
 - name: installing rtorrent
   apt:
     name: rtorrent
@@ -7,20 +14,20 @@
     src: .rtorrent.rc.j2
     dest: /home/{{ rtorrent_user }}/.rtorrent.rc
     owner: '{{ rtorrent_user }}'
-    group: '{{ rtorrent_www_shared_group }}'
+    group: '{{ shared_group }}'
 
 - name: creating rtorrent folder
   file:
     path: /home/{{ rtorrent_user }}/rtorrent
     owner: '{{ rtorrent_user }}'
-    group: '{{ rtorrent_www_shared_group }}'
+    group: '{{ shared_group }}'
     state: directory
 
 - name: creating folder for scgi sock
   file:
     path: /var/run/rtorrent
     owner: '{{ rtorrent_user }}'
-    group: '{{ rtorrent_www_shared_group }}'
+    group: '{{ shared_group }}'
     state: directory
 
 - name: creating rtorrent service

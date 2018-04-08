@@ -18,4 +18,4 @@
     port: '{{ item }}'
     timeout: 3
   with_items:
-    - 445 # TCP
+    - 445

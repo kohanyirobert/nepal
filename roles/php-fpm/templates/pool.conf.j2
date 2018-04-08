@@ -1,10 +1,10 @@
 ; {{ ansible_managed }}
 [rutorrent]
 user = {{ www_user }}
-group = {{ rtorrent_www_shared_group }}
+group = {{ shared_group }}
 listen = /var/run/php/php7.0-fpm-rutorrent.sock
 listen.owner =  {{ www_user }}
-listen.group = {{ rtorrent_www_shared_group }}
+listen.group = {{ shared_group }}
 listen.mode = 0660
 pm = static
 pm.max_children = 2
