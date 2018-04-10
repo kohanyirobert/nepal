@@ -54,9 +54,3 @@
   service:
     name: syncthing
     state: restarted
-
-- name: checking if syncthing's gui port is open 
-  wait_for:
-    host: '{{ freedns_main_domain.name }}'
-    port: '{{ syncthing_gui_port }}'
-    timeout: 3
