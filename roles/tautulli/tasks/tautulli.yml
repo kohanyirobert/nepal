@@ -1,0 +1,54 @@
+- name: creating tatulli user
+  user:
+    name: '{{ tautulli_user }}'
+    group: nogroup
+    create_home: no
+
+- name: cloning rutorrent repository
+  git:
+    repo: '{{ tautulli_git_repo }}'
+    dest: '{{ tautulli_dir }}'
+    version: '{{ tautulli_git_version }}'
+    force: yes
+
+- name: changing tautulli dir permissions
+  file:
+    path: '{{ tautulli_dir }}'
+    owner: '{{ tautulli_user }}'
+    group: '{{ tautulli_group }}'
+    recurse: yes
+    state: directory
+
+- name: changing default configuration options in config.py
+  lineinfile:
+    path: '{{ tautulli_dir }}/plexpy/config.py'
+    regexp: "^\\s+'{{ item.key }}': \\(.*$"
+    line: '{{ item.line }}'
+    firstmatch: yes
+  with_items:
+    - key: HTTP_HOST
+      line: "    'HTTP_HOST': (str, 'General', '{{ tautulli_web_host }}'),"
+    - key: HTTP_PORT
+      line: "    'HTTP_PORT': (int, 'General', {{ tautulli_web_port }}),"
+    - key: HTTP_ROOT
+      line: "    'HTTP_ROOT': (str, 'General', '/tautulli'),"
+    - key: HTTP_USERNAME
+      line: "    'HTTP_USERNAME': (str, 'General', '{{ tautulli_web_user }}'),"
+    - key: HTTP_PASSWORD
+      line: "    'HTTP_PASSWORD': (str, 'General', '{{ tautulli_web_pass }}'),"
+    - key: HTTP_PROXY
+      line: "    'HTTP_PROXY': (int, 'General', 1),"
+    - key: HTTP_HASH_PASSWORD
+      line: "    'HTTP_HASH_PASSWORD': (int, 'General', 1),"
+    - key: HTTP_HASHED_PASSWORD
+      line: "    'HTTP_HASHED_PASSWORD': (int, 'General', 1),"
+
+- name: creating tautulli service
+  template:
+    src: tautulli.service.j2
+    dest: /etc/systemd/system/tautulli.service
+
+- name: making sure tautulli is restarted
+  service:
+    name: tautulli
+    state: restarted
