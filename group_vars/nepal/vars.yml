@@ -41,3 +41,6 @@ tautulli_git_version: '{{ vault_tautulli_git_version }}'
 esm_dir: '{{ vault_esm_dir }}'
 esm_git_repo: '{{ vault_esm_git_repo }}'
 esm_git_version: '{{ vault_esm_git_version }}'
+
+mariadb_root_pass: '{{ vault_mariadb_root_pass }}'
+mariadb_bind_address: '{{ vault_mariadb_bind_address }}'

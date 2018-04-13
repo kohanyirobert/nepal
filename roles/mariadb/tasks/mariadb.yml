@@ -1,4 +1,43 @@
 - name: installing mariadb
   apt:
     update_cache: yes
-    name: mariadb-server
+    name:
+      - mariadb-server
+      - mariadb-client
+
+- name: installing python-mysqldb for ansible
+  apt:
+    name: python-mysqldb
+
+- name: setting mariadb root password 
+  mysql_user:
+    user: root
+    host: '{{ item }}'
+    password: '{{ mariadb_root_pass | mandatory }}'
+  with_items:
+    - ::1
+    - 127.0.0.1
+    - localhost
+
+- name: removing mariadb anonymous user accounts
+  mysql_user:
+    name: ''
+    host_all: yes
+    state: absent
+
+- name: removing mariadb test database
+  mysql_db:
+    name: test
+    state: absent
+
+- name: changing mariadb bind address
+  lineinfile:
+    path: /etc/mysql/mariadb.conf.d/50-server.cnf
+    firstmatch: yes
+    regexp: "^(bind-address\t\t)= 127.0.0.1$"
+    line: "bind-address\t\t= {{ mariadb_bind_address }}"
+
+- name: making sure mariadb is restarted
+  service:
+    name: mariadb
+    state: restarted
