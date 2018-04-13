@@ -9,6 +9,14 @@ server {
                 auth_basic "Restricted Content";
                 auth_basic_user_file /etc/nginx/.htpasswd;
         }
+        location /esm {
+                auth_basic "Restricted Content";
+                auth_basic_user_file /etc/nginx/.htpasswd;
+                index index.php;
+                location ~ /(conf)/ {
+                        deny all;
+                }
+        }
         location /RPC2 {
                 include scgi_params;
                 scgi_pass unix:/var/run/rtorrent/rtorrent.sock;

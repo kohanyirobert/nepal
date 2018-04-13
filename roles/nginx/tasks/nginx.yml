@@ -39,6 +39,17 @@
     src: index.html
     dest: '{{ www_web_root }}'
 
+- name: installing passlib for creating www web user
+  pip:
+    name: passlib
+
+- name: creating www web user and password
+  htpasswd:
+    path: /etc/nginx/.htpasswd
+    name: '{{ www_web_login_user }}'
+    password: '{{ www_web_login_pass }}'
+    mode: u=rw,g=r,o=
+
 - name: creating site for
   template:
     src: site.j2

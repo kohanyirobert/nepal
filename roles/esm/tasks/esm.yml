@@ -1,0 +1,27 @@
+- name: installing ez server monitor dependencies
+  apt:
+    name:
+      - hddtemp
+      - lm-sensors
+      - php-xml
+
+- name: cloning ez server monitor
+  git:
+    repo: '{{ esm_git_repo }}'
+    dest: '{{ esm_dir }}'
+    version: '{{ esm_git_version }}'
+    force: yes
+
+- name: creating ez server monitor conf.json
+  template:
+    src: conf.json.j2
+    dest: '{{ esm_dir }}/conf/esm.config.json'
+
+- name: allowing access for www user
+  file:
+    path: '{{ esm_dir }}'
+    owner: '{{ www_user }}'
+    group: '{{ shared_group }}'
+    mode: u=rwx,g=rwx,o=rx
+    state: directory
+    recurse: yes

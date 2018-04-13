@@ -1,14 +1,3 @@
-- name: installing passlib for creating rutorrent user
-  pip:
-    name: passlib
-
-- name: creating rutorrent user and password for nginx
-  htpasswd:
-    path: /etc/nginx/.htpasswd
-    name: '{{ rutorrent_login_user }}'
-    password: '{{ rutorrent_login_pass }}'
-    mode: u=rw,g=r,o=
-
 - name: cloning rutorrent repository
   git:
     repo: '{{ rutorrent_git_repo }}'
@@ -22,10 +11,9 @@
     dest: '{{ rutorrent_dir }}/conf/config.php'
 
 - name: initializing plugins for rutorrent user before applying correct owner and group permissions
-  command: >
-    php {{ rutorrent_dir }}/php/initplugins.php {{ rutorrent_login_user }}
+  command: php {{ rutorrent_dir }}/php/initplugins.php {{ www_web_login_user }}
 
-- name: allowing access for shared group
+- name: allowing access for www and shared group
   file:
     path: '{{ rutorrent_dir }}'
     owner: '{{ www_user }}'
