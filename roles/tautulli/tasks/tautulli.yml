@@ -36,12 +36,6 @@
       line: "    'HTTP_USERNAME': (str, 'General', '{{ tautulli_web_user }}'),"
     - key: HTTP_PASSWORD
       line: "    'HTTP_PASSWORD': (str, 'General', '{{ tautulli_web_pass }}'),"
-    - key: HTTP_PROXY
-      line: "    'HTTP_PROXY': (int, 'General', 1),"
-    - key: HTTP_HASH_PASSWORD
-      line: "    'HTTP_HASH_PASSWORD': (int, 'General', 1),"
-    - key: HTTP_HASHED_PASSWORD
-      line: "    'HTTP_HASHED_PASSWORD': (int, 'General', 1),"
 
 - name: creating tautulli service
   template:
