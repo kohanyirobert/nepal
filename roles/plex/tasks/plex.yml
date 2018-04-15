@@ -13,8 +13,8 @@
 
 - name: installing plex
   apt:
-    update_cache: yes
     name: plexmediaserver-installer
+    update_cache: yes
 
 - name: adding plex user to storage shared group
   user:
