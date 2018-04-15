@@ -1,3 +1,8 @@
+- name: installing certbot
+  apt:
+    name: python-certbot-nginx
+    default_release: stretch-backports
+
 - name: installing certs
   command: >
     certbot
