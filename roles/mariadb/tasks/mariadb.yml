@@ -4,6 +4,18 @@
       - mariadb-server
       - mariadb-client
 
+- name: changing mariadb bind address
+  lineinfile:
+    path: /etc/mysql/mariadb.conf.d/50-server.cnf
+    firstmatch: yes
+    regexp: "^(bind-address\t\t)= 127.0.0.1$"
+    line: "bind-address\t\t= {{ mariadb_bind_address }}"
+
+- name: making sure mariadb is restarted
+  service:
+    name: mariadb
+    state: restarted
+
 - name: installing python-mysqldb for ansible
   apt:
     name: python-mysqldb
@@ -31,15 +43,3 @@
   mysql_db:
     name: test
     state: absent
-
-- name: changing mariadb bind address
-  lineinfile:
-    path: /etc/mysql/mariadb.conf.d/50-server.cnf
-    firstmatch: yes
-    regexp: "^(bind-address\t\t)= 127.0.0.1$"
-    line: "bind-address\t\t= {{ mariadb_bind_address }}"
-
-- name: making sure mariadb is restarted
-  service:
-    name: mariadb
-    state: restarted
