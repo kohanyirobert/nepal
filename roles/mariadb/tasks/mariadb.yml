@@ -1,6 +1,5 @@
 - name: installing mariadb
   apt:
-    update_cache: yes
     name:
       - mariadb-server
       - mariadb-client
