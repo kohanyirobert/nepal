@@ -7,6 +7,8 @@ plex_user: '{{ vault_plex_user }}'
 
 rtorrent_user: '{{ vault_rtorrent_user }}'
 rtorrent_port: '{{ vault_rtorrent_port }}'
+rtorrent_dir: '{{ vault_rtorrent_dir }}'
+rtorrent_default_download_dir: '{{ vault_rtorrent_default_download_dir }}'
 
 www_user: '{{ vault_www_user }}'
 www_web_root: '{{ vault_www_web_root }}'

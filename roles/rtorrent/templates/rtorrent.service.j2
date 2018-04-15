@@ -5,9 +5,9 @@ After=network.target
 [Service]
 Type=forking
 KillMode=none
-ExecStart=/usr/bin/screen -d -m -fa -S rtorrent /usr/bin/rtorrent
+ExecStart=/usr/bin/screen -d -m -fa -S rtorrent /usr/bin/rtorrent -n -o import={{ rtorrent_dir }}/.rtorrent.rc
 ExecStop=/usr/bin/killall --wait --signal SIGINT /usr/bin/rtorrent
-WorkingDirectory=/home/{{ rtorrent_user }}
+WorkingDirectory={{ rtorrent_dir }}
 User={{ rtorrent_user }}
 Group={{ shared_group }}
 

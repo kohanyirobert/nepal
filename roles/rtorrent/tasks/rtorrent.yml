@@ -1,9 +1,14 @@
 - name: creating rtorrent user and adding to shared group
   user:
     name: '{{ rtorrent_user }}'
-    append: yes
-    groups:
-      - '{{ shared_group }}'
+    group: '{{ shared_group }}'
+    create_home: no
+
+- name: making sure rtorrent directory is accessible to shared group
+  file:
+    path: '{{ rtorrent_dir }}'
+    group: '{{ shared_group }}'
+    state: directory
 
 - name: installing rtorrent
   apt:
@@ -12,13 +17,13 @@
 - name: creating rtorrent configuration
   template:
     src: .rtorrent.rc.j2
-    dest: /home/{{ rtorrent_user }}/.rtorrent.rc
+    dest: '{{ rtorrent_dir }}/.rtorrent.rc'
     owner: '{{ rtorrent_user }}'
     group: '{{ shared_group }}'
 
 - name: creating rtorrent folder
   file:
-    path: /home/{{ rtorrent_user }}/rtorrent
+    path: '{{ rtorrent_dir }}'
     owner: '{{ rtorrent_user }}'
     group: '{{ shared_group }}'
     state: directory
