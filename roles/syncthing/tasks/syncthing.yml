@@ -22,6 +22,11 @@
     src: syncthing.service.j2
     dest: /etc/systemd/system/syncthing.service
 
+- name: making sure syncthing is started in order config files to be created
+  service:
+    name: syncthing
+    state: started
+
 - name: installing lxml to satisfy ansible xml module dependency
   apt:
     name: python-lxml
@@ -35,7 +40,7 @@
   with_items:
     - xpath: /configuration/gui
       attribute: tls
-      value: 'true'
+      value: 'false'
 
 - name: setting syncthing config parameters
   xml:
