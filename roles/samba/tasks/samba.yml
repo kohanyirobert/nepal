@@ -12,10 +12,16 @@
     name: smbd
     state: restarted
 
-- name: checking if samba ports are open
-  wait_for:
-    host: '{{ freedns_main_domain.name }}'
-    port: '{{ item }}'
-    timeout: 3
-  with_items:
-    - 445
+- name: setting samba password for admin user
+  shell: |
+    smbpasswd -a {{ admin_user }}
+
+    expect "New SMB password:"
+    send "{{ admin_samba_pass }}\n"
+
+    expect "\nRetype new SMB password:"
+    send "{{ admin_samba_pass }}\n"
+
+    exit 0
+  args:
+    executable: /usr/bin/expect
