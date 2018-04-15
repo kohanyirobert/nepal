@@ -22,22 +22,20 @@
     state: absent
   with_items: '{{ enabled_sites.files }}'
 
-- name: finding html files
-  find:
-    paths: '{{ www_web_root }}'
-    file_type: file
-  register: html_files
-
-- name: removing html files
+- name: making sure www web root exists and is accessible by shared group
   file:
-    path: '{{ item.path }}'
-    state: absent
-  with_items: '{{ html_files.files }}'
+    path: '{{ www_web_root }}'
+    group: '{{ shared_group }}'
+    state: directory
 
 - name: copying index.html file
   copy:
     src: index.html
     dest: '{{ www_web_root }}'
+
+- name: installing pip in order to install passlib
+  apt:
+    name: python-pip
 
 - name: installing passlib for creating www web user
   pip:
@@ -48,6 +46,7 @@
     path: /etc/nginx/.htpasswd
     name: '{{ www_web_login_user }}'
     password: '{{ www_web_login_pass }}'
+    group: '{{ shared_group }}'
     mode: u=rw,g=r,o=
 
 - name: creating site for
