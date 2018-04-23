@@ -36,3 +36,9 @@
   group:
     name: '{{ shared_group }}'
     gid: '{{ shared_group_id }}'
+
+- name: creating logrotate config for /tmp/*.log
+  copy:
+    src: tmp
+    dest: /etc/logrotate.d/
+  tags: a
