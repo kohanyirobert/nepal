@@ -33,3 +33,11 @@
   service:
     name: plexmediaserver
     state: restarted
+
+- name: creating plex data backup cron jobs
+  cron:
+    name: plex data backup cron job
+    minute: 30
+    hour: 3
+    value: /usr/bin/rsync --archive --log-file /tmp/plex_data_backup.log /var/lib/plexmediaserver {{ storage_device_mount_point }}
+
