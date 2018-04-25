@@ -4,15 +4,16 @@
     group: '{{ shared_group }}'
     create_home: no
 
-- name: making sure rtorrent directory is accessible to shared group
-  file:
-    path: '{{ rtorrent_dir }}'
-    group: '{{ shared_group }}'
-    state: directory
-
 - name: installing rtorrent
   apt:
     name: rtorrent
+
+- name: creating rtorrent folder and making sure its accessible to shared group
+  file:
+    path: '{{ rtorrent_dir }}'
+    owner: '{{ rtorrent_user }}'
+    group: '{{ shared_group }}'
+    state: directory
 
 - name: creating rtorrent configuration
   template:
@@ -20,13 +21,6 @@
     dest: '{{ rtorrent_dir }}/.rtorrent.rc'
     owner: '{{ rtorrent_user }}'
     group: '{{ shared_group }}'
-
-- name: creating rtorrent folder
-  file:
-    path: '{{ rtorrent_dir }}'
-    owner: '{{ rtorrent_user }}'
-    group: '{{ shared_group }}'
-    state: directory
 
 - name: creating folder for scgi sock
   file:
@@ -45,7 +39,7 @@
     name: rtorrent
     state: restarted
 
-- name: checking if rtorrent's port is open 
+- name: checking if rtorrent's port is open
   wait_for:
     host: '{{ freedns_main_domain.name }}'
     port: '{{ rtorrent_port }}'

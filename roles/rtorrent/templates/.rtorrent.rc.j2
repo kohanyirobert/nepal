@@ -13,11 +13,14 @@ method.insert = cfg.basedir, private|const|string, (cat,"{{ rtorrent_dir }}/")
 method.insert = cfg.watch,   private|const|string, (cat,(cfg.basedir),"watch/")
 method.insert = cfg.logs,    private|const|string, (cat,(cfg.basedir),"log/")
 method.insert = cfg.logfile, private|const|string, (cat,(cfg.logs),"rtorrent-",(system.time),".log")
+method.insert = cfg.drop_in, private|const|string, (cat, (cfg.basedir), "config.d/")
+execute.nothrow = bash, -c, (cat, "find ", (cfg.drop_in), " -name '*.rc' | sort | sed -re 's/^/import=/' >", (cfg.drop_in), ".import")
+try_import = (cat, (cfg.drop_in), ".import")
 
 # Create instance directories
 execute.throw = bash, -c, (cat,\
     "builtin cd \"", (cfg.basedir), "\" ",\
-    "&& mkdir -p .session download log watch/{load,start}")
+    "&& mkdir -p .session download log watch/{load,start} config.d")
 
 # Listening port for incoming peer traffic (fixed; you can also randomize it)
 network.port_range.set = {{ rtorrent_port }}-{{ rtorrent_port }}
