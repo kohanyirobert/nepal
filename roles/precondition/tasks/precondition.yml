@@ -41,4 +41,3 @@
   copy:
     src: tmp
     dest: /etc/logrotate.d/
-  tags: a
