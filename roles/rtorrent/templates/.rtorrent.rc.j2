@@ -99,9 +99,9 @@ log.add_output = "info", "log"
 ##log.add_output = "tracker_debug", "log"
 
 # XMLRPC socket for ruTorrent.
-execute.nothrow = rm, /var/run/rtorrent/rtorrent.sock
-scgi_local = /var/run/rtorrent/rtorrent.sock
-schedule2 = socket_chmod, 0, 0, "execute.nothrow = chmod, \"u=rw,g=rw,o=\", /var/run/rtorrent/rtorrent.sock"
-schedule2 = socket_chgrp, 0, 0, "execute.nothrow = chgrp, {{ shared_group }}, /var/run/rtorrent/rtorrent.sock"
+execute.nothrow = rm, /run/rtorrent/rtorrent.sock
+scgi_local = /run/rtorrent/rtorrent.sock
+schedule2 = socket_chmod, 0, 0, "execute.nothrow = chmod, \"u=rw,g=rw,o=\", /run/rtorrent/rtorrent.sock"
+schedule2 = socket_chgrp, 0, 0, "execute.nothrow = chgrp, {{ shared_group }}, /run/rtorrent/rtorrent.sock"
 
 ### END of rtorrent.rc ###

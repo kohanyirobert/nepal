@@ -10,6 +10,8 @@ ExecStop=/usr/bin/killall --wait --signal SIGINT /usr/bin/rtorrent
 WorkingDirectory={{ rtorrent_dir }}
 User={{ rtorrent_user }}
 Group={{ shared_group }}
+PermissionsStartOnly=True
+RuntimeDirectory=rtorrent
 
 [Install]
 WantedBy=multi-user.target

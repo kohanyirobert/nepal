@@ -22,6 +22,21 @@
     owner: '{{ rtorrent_user }}'
     group: '{{ shared_group }}'
 
+- name: adding move on completion rtorrent drop-in config
+  template:
+    src: move-on-completion.rc.j2
+    dest: '{{ rtorrent_dir }}/config.d/move-on-completion.rc'
+    owner: '{{ rtorrent_user }}'
+    group: '{{ shared_group }}'
+
+- name: adding completion path shell script
+  template:
+    src: get-completion-path.sh.j2
+    dest: '{{ rtorrent_dir }}/get-completion-path.sh'
+    owner: '{{ rtorrent_user }}'
+    group: '{{ shared_group }}'
+    mode: u+x
+
 - name: creating folder for scgi sock
   file:
     path: /var/run/rtorrent
@@ -37,6 +52,7 @@
 - name: making sure rtorrent is restarted
   service:
     name: rtorrent
+    enabled: yes
     state: restarted
 
 - name: checking if rtorrent's port is open
