@@ -25,6 +25,7 @@
 - name: making sure syncthing is started in order config files to be created
   service:
     name: syncthing
+    enabled: yes
     state: started
 
 - name: installing lxml to satisfy ansible xml module dependency
@@ -46,7 +47,7 @@
   xml:
     path: /home/{{ syncthing_user }}/.config/syncthing/config.xml
     xpath: '{{ item.xpath }}'
-    value: '{{ item.value }}'    
+    value: '{{ item.value }}'
   with_items:
     - xpath: /configuration/gui/address
       value: '{{ syncthing_gui_host }}:{{ syncthing_gui_port }}'

@@ -45,4 +45,5 @@
 - name: making sure tautulli is restarted
   service:
     name: tautulli
+    enabled: yes
     state: restarted
