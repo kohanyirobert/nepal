@@ -37,6 +37,18 @@
     group: '{{ shared_group }}'
     mode: u+x
 
+- name: installing jinja2 for ffmpeg-transcode script
+  pip:
+    name: jinja2
+
+- name: copying ffmpeg-transcode script
+  copy:
+    src: ffmpeg-transcode.py
+    dest: '{{ rtorrent_dir }}'
+    owner: '{{ rtorrent_user }}'
+    group: '{{ shared_group }}'
+    mode: u+x
+
 - name: creating folder for scgi sock
   file:
     path: /var/run/rtorrent
