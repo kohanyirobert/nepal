@@ -49,7 +49,7 @@
     group: '{{ shared_group }}'
     mode: u=rw,g=r,o=
 
-- name: creating site for
+- name: creating site
   template:
     src: site.j2
     dest: /etc/nginx/sites-available/{{ freedns_main_domain.name }}
