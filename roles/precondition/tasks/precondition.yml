@@ -10,13 +10,6 @@
   apt:
     name: tree
 
-- name: adding admin user to shared group
-  user:
-    name: '{{ admin_user }}'
-    append: yes
-    groups:
-      - '{{ shared_group }}'
-
 - name: making sure we're provisiong debian
   fail:
     msg: can provision debian only
@@ -36,6 +29,13 @@
   group:
     name: '{{ shared_group }}'
     gid: '{{ shared_group_id }}'
+
+- name: adding admin user to shared group
+  user:
+    name: '{{ admin_user }}'
+    append: yes
+    groups:
+      - '{{ shared_group }}'
 
 - name: creating logrotate config for /tmp/*.log
   copy:
