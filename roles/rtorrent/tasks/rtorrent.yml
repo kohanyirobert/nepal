@@ -41,9 +41,16 @@
     group: '{{ shared_group }}'
     mode: u+x
 
+- name: installing pip3 for ffmpeg-transcode script
+  apt:
+    name: python3-pip
+  tags: a
+
 - name: installing jinja2 for ffmpeg-transcode script
   pip:
+    executable: pip3
     name: jinja2
+  tags: a
 
 - name: copying ffmpeg-transcode script
   copy:
@@ -52,6 +59,7 @@
     owner: '{{ rtorrent_user }}'
     group: '{{ shared_group }}'
     mode: u+x
+  tags: a
 
 - name: creating folder for scgi sock
   file:

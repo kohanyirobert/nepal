@@ -2,13 +2,12 @@
   apt:
     update_cache: yes
 
-- name: installing mosh
+- name: installing mosh, tree, tmux
   apt:
-    name: mosh
-
-- name: installing tree
-  apt:
-    name: tree
+    name:
+      - mosh
+      - tree
+      - tmux
 
 - name: making sure we're provisiong debian
   fail:
