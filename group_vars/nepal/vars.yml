@@ -11,6 +11,7 @@ rtorrent_dir: '{{ vault_rtorrent_dir }}'
 rtorrent_default_download_dir: '{{ vault_rtorrent_default_download_dir }}'
 
 www_user: '{{ vault_www_user }}'
+www_group: '{{ vault_www_group }}'
 www_web_root: '{{ vault_www_web_root }}'
 www_web_login_user: '{{ vault_www_web_login_user }}'
 www_web_login_pass: '{{ vault_www_web_login_pass }}'

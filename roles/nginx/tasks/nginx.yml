@@ -28,6 +28,13 @@
     group: '{{ shared_group }}'
     state: directory
 
+- name: making sure /var/log/nginx exists and nginx can access it
+  file:
+    path: /var/log/nginx
+    owner: '{{ www_user }}'
+    group: '{{ www_group }}'
+    state: directory
+
 - name: copying index.html file
   copy:
     src: index.html
