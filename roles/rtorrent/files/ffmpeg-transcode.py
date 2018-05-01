@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 from sys import argv
-from os import scandir
-from os.path import splitext, isfile, isdir
+from os import scandir, remove
+from os.path import splitext, isfile, isdir, dirname
 from subprocess import run, check_output, check_call, CalledProcessError
 from xml.etree import ElementTree
 from jinja2 import Template
 from syslog import syslog, openlog, closelog, LOG_PID, LOG_USER, LOG_INFO, LOG_DEBUG, LOG_ERR
+from tempfile import mkstemp
 
 SCRIPT_NAME = 'ffmpeg-transcode'
 SIZE_THRESHOLD = 512 * 1000 * 1000
@@ -41,9 +42,11 @@ try:
         exit(1)
 
     input_path = input_paths[0]
+    _, temp_path = mkstemp(dir=dirname(input_path))
     output_path = '{}-stereo.mp4'.format(splitext(input_path)[0])
 
     syslog(LOG_DEBUG, 'Input path: {}'.format(input_path))
+    syslog(LOG_DEBUG, 'Temp path: {}'.format(temp_path))
     syslog(LOG_DEBUG, 'Output path: {}'.format(output_path))
 
     try:
@@ -79,7 +82,7 @@ try:
         exit(0)
 
     task = Template('''\
-logger --id=$$ --tag {{ script_name }} Starting transcode: '{{ input_path }}' -> '{{ output_path }}'
+logger --id=$$ --tag {{ script_name }} Starting: '{{ input_path }}' -> '{{ output_path }}'
 ffmpeg \
 -y \
 -progress /tmp/{{ script_name }}-progress.log \
@@ -91,9 +94,15 @@ ffmpeg \
 {% endfor -%}
 -af "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR" \
 -map 0 \
-'{{ output_path }}' 2> /tmp/{{ script_name }}-error.log
-logger --id=$$ --tag {{ script_name }} Finished transcode: '{{ input_path }}' -> '{{ output_path }}'\
-''').render(script_name=SCRIPT_NAME, input_path=input_path, output_path=output_path, stream_indexes=stream_indexes)
+-f mp4 \
+'{{ input_path }}' 2> /tmp/{{ script_name }}-error.log
+logger --id=$$ --tag {{ script_name }} Finished: '{{ input_path }}' -> '{{ input_path }}'\
+logger --id=$$ --tag {{ script_name }} Moving: '{{ temp_path }}' -> '{{ output_path }}'\
+''').render(script_name=SCRIPT_NAME,
+            input_path=input_path,
+            temp_path=temp_path,
+            output_path=output_path,
+            stream_indexes=stream_indexes)
 
     syslog(LOG_DEBUG, 'Task: {}'.format(task))
 
@@ -104,4 +113,8 @@ logger --id=$$ --tag {{ script_name }} Finished transcode: '{{ input_path }}' ->
         exit(1)
 finally:
     closelog()
+    try:
+        remove(temp_path)
+    except OSError:
+        pass
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 list
