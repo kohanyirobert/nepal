@@ -8,6 +8,10 @@
   apt:
     name: rtorrent
 
+- name: installing atd and at for task scheduling
+  apt:
+    name: at
+
 - name: creating rtorrent folder and making sure its accessible to shared group
   file:
     path: '{{ rtorrent_dir }}'
