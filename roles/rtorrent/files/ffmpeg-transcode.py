@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from sys import argv
+from sys import argv, exc_info
 from os import scandir, remove
 from os.path import splitext, isfile, isdir, dirname
 from subprocess import run, check_output, check_call, CalledProcessError
@@ -14,6 +14,13 @@ SIZE_THRESHOLD = 512 * 1000 * 1000
 openlog(SCRIPT_NAME, LOG_PID, LOG_USER)
 try:
     root_dir_path = argv[1]
+    is_open = True if argv[2] == '1' else False
+    is_active = True if argv[3] == '1' else False
+
+    syslog(LOG_DEBUG, 'root_dir_path: {}'.format(root_dir_path))
+    syslog(LOG_DEBUG, 'is_open: {}'.format(is_open))
+    syslog(LOG_DEBUG, 'is_active: {}'.format(is_active))
+
     if isfile(root_dir_path):
         syslog(LOG_ERR, 'Illegal argument, file received instead of directory: {}'.format(root_dir_path))
         exit(1)
@@ -117,5 +124,8 @@ logger --id=$$ --tag {{ script_name }} 'Moved: {{ temp_path }} -> {{ output_path
         exit(1)
     finally:
         syslog(LOG_DEBUG, 'Script done')
+except:
+    syslog(LOG_ERR, 'Unexpected error: {}'.format(exc_info()[0]))
+    raise
 finally:
     closelog()
