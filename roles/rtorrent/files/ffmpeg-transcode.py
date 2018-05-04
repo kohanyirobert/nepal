@@ -10,27 +10,12 @@ from tempfile import mkstemp
 
 SCRIPT_NAME = 'ffmpeg-transcode'
 SIZE_THRESHOLD = 512 * 1000 * 1000
+OUT_FORMAT = 'mp4'
 
-openlog(SCRIPT_NAME, LOG_PID, LOG_USER)
-try:
-    root_dir_path = argv[1]
-    is_open = True if argv[2] == '1' else False
-    is_active = True if argv[3] == '1' else False
 
-    syslog(LOG_DEBUG, 'root_dir_path: {}'.format(root_dir_path))
-    syslog(LOG_DEBUG, 'is_open: {}'.format(is_open))
-    syslog(LOG_DEBUG, 'is_active: {}'.format(is_active))
-
-    if isfile(root_dir_path):
-        syslog(LOG_ERR, 'Illegal argument, file received instead of directory: {}'.format(root_dir_path))
-        exit(1)
-
-    if not isdir(root_dir_path):
-        syslog(LOG_ERR, 'Illegal argument, not a directory: {}'.format(root_dir_path))
-        exit(1)
-
+def try_find_input_path(data_path):
     input_paths = []
-    for entry in scandir(root_dir_path):
+    for entry in scandir(data_path):
         if not entry.is_file():
             continue
 
@@ -48,9 +33,29 @@ try:
         syslog(LOG_ERR, 'More than one input found: {}'.format(num_of_input_paths))
         exit(1)
 
-    input_path = input_paths[0]
+    return input_paths[0]
+
+
+openlog(SCRIPT_NAME, LOG_PID, LOG_USER)
+try:
+    data_path = argv[1]
+    is_open = True if argv[2] == '1' else False
+    is_active = True if argv[3] == '1' else False
+
+    syslog(LOG_DEBUG, 'data_path: {}'.format(data_path))
+    syslog(LOG_DEBUG, 'is_open: {}'.format(is_open))
+    syslog(LOG_DEBUG, 'is_active: {}'.format(is_active))
+
+    if isdir(data_path):
+        input_path = try_find_input_path(data_path)
+    elif isfile(data_path):
+        input_path = data_path
+    else:
+        syslog(LOG_ERR, 'Data path must be a file or directory: {}'.format(data_path))
+        exit(1)
+
     _, temp_path = mkstemp(dir=dirname(input_path))
-    output_path = '{}-stereo.mp4'.format(splitext(input_path)[0])
+    output_path = '{}-stereo.{}'.format(splitext(input_path)[0], OUT_FORMAT)
 
     syslog(LOG_DEBUG, 'Input path: {}'.format(input_path))
     syslog(LOG_DEBUG, 'Temp path: {}'.format(temp_path))
@@ -75,7 +80,7 @@ try:
     stream_indexes = []
     for audio_stream in audio_streams:
         channels = audio_stream.attrib['channels']
-        codec_name = audio_stream.attrib['channels']
+        codec_name = audio_stream.attrib['codec_name']
         if channels <= "2" and codec_name == 'aac':
             continue
 
@@ -86,6 +91,10 @@ try:
     num_of_stream_indexes = len(stream_indexes)
     if num_of_stream_indexes == 0:
         syslog(LOG_INFO, 'No streams found, nothing to do')
+        try:
+            remove(temp_path)
+        except OSError:
+            pass
         exit(0)
 
     task = Template('''\
@@ -101,7 +110,7 @@ ffmpeg \
 {% endfor -%}
 -af "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR" \
 -map 0 \
--f mp4 \
+-f {{ out_format }} \
 '{{ temp_path }}' 2> /tmp/{{ script_name }}-error.log
 logger --id=$$ --tag {{ script_name }} 'Finished: {{ input_path }} -> {{ temp_path }}'
 logger --id=$$ --tag {{ script_name }} 'Trying: {{ temp_path }} -> {{ output_path }}'
@@ -112,7 +121,8 @@ logger --id=$$ --tag {{ script_name }} 'Moved: {{ temp_path }} -> {{ output_path
             input_path=input_path,
             temp_path=temp_path,
             output_path=output_path,
-            stream_indexes=stream_indexes)
+            stream_indexes=stream_indexes,
+            out_format=OUT_FORMAT)
 
     syslog(LOG_DEBUG, 'Task: {}'.format(task))
 
@@ -124,6 +134,9 @@ logger --id=$$ --tag {{ script_name }} 'Moved: {{ temp_path }} -> {{ output_path
         exit(1)
     finally:
         syslog(LOG_DEBUG, 'Script done')
+except SystemExit as ex:
+    syslog(LOG_DEBUG, 'Exit code: {}'.format(ex))
+    raise ex
 except:
     syslog(LOG_ERR, 'Unexpected error: {}'.format(exc_info()[0]))
     raise
