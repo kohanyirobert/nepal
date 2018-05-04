@@ -82,7 +82,7 @@ try:
         exit(0)
 
     task = Template('''\
-logger --id=$$ --tag {{ script_name }} Starting: '{{ input_path }}' -> '{{ output_path }}'
+logger --id=$$ --tag {{ script_name }} 'Starting: {{ input_path }} -> {{ temp_path }}'
 ffmpeg \
 -y \
 -progress /tmp/{{ script_name }}-progress.log \
@@ -95,9 +95,12 @@ ffmpeg \
 -af "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR" \
 -map 0 \
 -f mp4 \
-'{{ input_path }}' 2> /tmp/{{ script_name }}-error.log
-logger --id=$$ --tag {{ script_name }} Finished: '{{ input_path }}' -> '{{ input_path }}'\
-logger --id=$$ --tag {{ script_name }} Moving: '{{ temp_path }}' -> '{{ output_path }}'\
+'{{ temp_path }}' 2> /tmp/{{ script_name }}-error.log
+logger --id=$$ --tag {{ script_name }} 'Finished: {{ input_path }} -> {{ temp_path }}'
+logger --id=$$ --tag {{ script_name }} 'Trying: {{ temp_path }} -> {{ output_path }}'
+logger --id=$$ --tag {{ script_name }} "Moving: `mv -v '{{ temp_path }}' '{{ output_path }}'`"
+logger --id=$$ --tag {{ script_name }} 'Moved: {{ temp_path }} -> {{ output_path }}'
+\
 ''').render(script_name=SCRIPT_NAME,
             input_path=input_path,
             temp_path=temp_path,
@@ -108,13 +111,11 @@ logger --id=$$ --tag {{ script_name }} Moving: '{{ temp_path }}' -> '{{ output_p
 
     try:
         run(['at', '-M', 'now'], check=True, input=task.encode())
+        syslog(LOG_DEBUG, 'Successfully scheduled task')
     except CalledProcessError as ex:
         syslog(LOG_ERR, 'Failed schedule task: {}'.format(ex))
         exit(1)
+    finally:
+        syslog(LOG_DEBUG, 'Script done')
 finally:
     closelog()
-    try:
-        remove(temp_path)
-    except OSError:
-        pass
-# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 list

@@ -26,20 +26,12 @@
     owner: '{{ rtorrent_user }}'
     group: '{{ shared_group }}'
 
-- name: adding move on completion rtorrent drop-in config
+- name: adding ffmpeg-transcode rtorrent drop-in config
   template:
-    src: move-on-completion.rc.j2
-    dest: '{{ rtorrent_dir }}/config.d/move-on-completion.rc'
+    src: ffmpeg-transcode.rc.j2
+    dest: '{{ rtorrent_dir }}/config.d/ffmpeg-transcode.rc'
     owner: '{{ rtorrent_user }}'
     group: '{{ shared_group }}'
-
-- name: adding completion path shell script
-  template:
-    src: get-completion-path.sh.j2
-    dest: '{{ rtorrent_dir }}/get-completion-path.sh'
-    owner: '{{ rtorrent_user }}'
-    group: '{{ shared_group }}'
-    mode: u+x
 
 - name: installing pip3 for ffmpeg-transcode script
   apt:

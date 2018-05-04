@@ -1,0 +1,4 @@
+print = "Drop-in loaded: ffmpeg-transcode"
+
+method.set_key = event.download.finished, ffmpeg_transcode, \
+    "execute.throw = {{ rtorrent_dir }}/ffmpeg-transcode.py, (d.base_path)"
