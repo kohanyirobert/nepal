@@ -9,7 +9,6 @@
     - nginx
     - certbot
     - rutorrent
-    - samba
     - syncthing
     - esm
     - mariadb
