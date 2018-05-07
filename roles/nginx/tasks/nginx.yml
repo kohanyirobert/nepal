@@ -67,6 +67,16 @@
     path: /etc/nginx/sites-enabled/{{ freedns_main_domain.name }}
     state: link
 
+- name: disabling nginx access and error logs
+  lineinfile:
+    path: /etc/nginx/nginx.conf
+    firstmatch: yes
+    regexp: "^\t{{ item }}_log .*{{ item }}\\.log;$"
+    line: "\t{{ item }}_log off;"
+  with_items:
+    - access
+    - error
+
 - name: making sure nginx is restarted
   service:
     name: nginx
