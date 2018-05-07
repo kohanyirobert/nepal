@@ -1,0 +1,23 @@
+- name: cloning fail2ban repository
+  git:
+    repo: '{{ fail2ban_git_repo }}'
+    dest: '{{ fail2ban_dir }}'
+    version: '{{ fail2ban_git_version }}'
+    force: yes
+
+- name: install fail2ban
+  command: python setup.py install
+  args:
+    chdir: '{{ fail2ban_dir }}'
+
+- name: copying fail2ban service
+  copy:
+    remote_src: yes
+    src: '{{ fail2ban_dir }}/build/fail2ban.service'
+    dest: /etc/systemd/system/fail2ban.service
+
+- name: making sure fail2ban is restarted
+  service:
+    name: fail2ban
+    enabled: yes
+    state: restarted

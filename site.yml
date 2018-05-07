@@ -2,6 +2,7 @@
   roles:
     - precondition
     - sshd
+    - fail2ban
     - storage
     - freedns
     - plex
