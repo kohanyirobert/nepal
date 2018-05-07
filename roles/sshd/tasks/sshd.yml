@@ -25,3 +25,9 @@
   service:
     name: sshd
     state: restarted
+
+- name: checking if external port for sshd is open
+  wait_for:
+    host: '{{ freedns_main_domain.name }}'
+    port: '{{ sshd_external_port }}'
+    timeout: 3
