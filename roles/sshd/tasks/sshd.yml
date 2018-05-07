@@ -1,0 +1,27 @@
+- name: configuring passwordless login for admin user
+  authorized_key:
+    user: '{{ admin_user }}'
+    state: present
+    key: '{{ admin_key }}'
+
+- name: making sure root login and password authentication is disallowed
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    firstmatch: yes
+    regexp: '^#?{{ item }} (yes|no)$'
+    line: '{{ item }} no'
+  with_items:
+    - PermitRootLogin
+    - PasswordAuthentication
+
+- name: making sure public key authentication is allowed
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    firstmatch: yes
+    regexp: '^#?PubkeyAuthentication (yes|no)$'
+    line: 'PubkeyAuthentication yes'
+
+- name: making sure sshd is restarted
+  service:
+    name: sshd
+    state: restarted

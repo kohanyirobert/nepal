@@ -1,6 +1,7 @@
 - hosts: nepal
   roles:
     - precondition
+    - sshd
     - storage
     - freedns
     - plex
