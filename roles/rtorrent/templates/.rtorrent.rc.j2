@@ -104,4 +104,7 @@ scgi_local = /run/rtorrent/rtorrent.sock
 schedule2 = socket_chmod, 0, 0, "execute.nothrow = chmod, \"u=rw,g=rw,o=\", /run/rtorrent/rtorrent.sock"
 schedule2 = socket_chgrp, 0, 0, "execute.nothrow = chgrp, {{ shared_group }}, /run/rtorrent/rtorrent.sock"
 
+# Start rutorrent plugins on system reboot.
+execute.nothrow = { sh, -c, /usr/bin/php {{ rutorrent_dir }}/php/initplugins.php {{ vault_www_web_login_user }} & }
+
 ### END of rtorrent.rc ###
