@@ -33,15 +33,6 @@
     owner: '{{ rtorrent_user }}'
     group: '{{ shared_group }}'
 
-- name: installing pip3 for ffmpeg-transcode script
-  apt:
-    name: python3-pip
-
-- name: installing jinja2 for ffmpeg-transcode script
-  pip:
-    executable: pip3
-    name: jinja2
-
 - name: copying ffmpeg-transcode script
   copy:
     src: ffmpeg-transcode.py

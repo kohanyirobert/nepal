@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 from sys import argv, exc_info
-from os import scandir, remove
+from os import scandir, remove, chmod
+from stat import S_IRUSR, S_IWUSR, S_IRGRP, S_IWGRP
 from os.path import splitext, isfile, isdir, dirname
 from subprocess import run, check_output, check_call, CalledProcessError
 from xml.etree import ElementTree
-from jinja2 import Template
 from syslog import syslog, openlog, closelog, LOG_PID, LOG_USER, LOG_INFO, LOG_DEBUG, LOG_ERR
 from tempfile import mkstemp
 
 SCRIPT_NAME = 'ffmpeg-transcode'
 SIZE_THRESHOLD = 512 * 1000 * 1000
-OUT_FORMAT = 'mp4'
-
 
 def try_find_input_path(data_path):
     input_paths = []
@@ -55,7 +53,10 @@ try:
         exit(1)
 
     _, temp_path = mkstemp(dir=dirname(input_path))
-    output_path = '{}-stereo.{}'.format(splitext(input_path)[0], OUT_FORMAT)
+    input_root, input_ext = splitext(input_path)
+    output_path = '{}-stereo{}'.format(input_root, input_ext)
+
+    chmod(temp_path, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP)
 
     syslog(LOG_DEBUG, 'Input path: {}'.format(input_path))
     syslog(LOG_DEBUG, 'Temp path: {}'.format(temp_path))
@@ -75,6 +76,10 @@ try:
         exit(1)
 
     xml = ElementTree.fromstring(output)
+
+    format_name_list = xml.find('.//format').attrib['format_name']
+    format_name = format_name_list.split(',')[0]
+    syslog(LOG_DEBUG, 'Format name list: {}, selecting first: {}'.format(format_name_list, format_name))
 
     audio_streams = xml.findall('.//stream[@codec_type="audio"]')
     stream_indexes = []
@@ -97,32 +102,28 @@ try:
             pass
         exit(0)
 
-    task = Template('''\
-logger --id=$$ --tag {{ script_name }} 'Starting: {{ input_path }} -> {{ temp_path }}'
+    task = '''\
+logger --id=$$ --tag {script_name} 'Starting: {input_path} -> {temp_path}'
 ffmpeg \
 -y \
--progress /tmp/{{ script_name }}-progress.log \
--i '{{ input_path }}' \
+-progress /tmp/{script_name}-progress.log \
+-i '{input_path}' \
 -codec:v copy \
--codec:s mov_text \
-{% for stream_index in stream_indexes -%}
--codec:a:{{ stream_index }} aac \
-{% endfor -%}
--af "pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR" \
+-codec:s copy \
+-codec:a aac \
+-af 'pan=stereo|FL < 1.0*FL + 0.707*FC + 0.707*BL|FR < 1.0*FR + 0.707*FC + 0.707*BR' \
 -map 0 \
--f {{ out_format }} \
-'{{ temp_path }}' 2> /tmp/{{ script_name }}-error.log
-logger --id=$$ --tag {{ script_name }} 'Finished: {{ input_path }} -> {{ temp_path }}'
-logger --id=$$ --tag {{ script_name }} 'Trying: {{ temp_path }} -> {{ output_path }}'
-logger --id=$$ --tag {{ script_name }} "Moving: `mv -v '{{ temp_path }}' '{{ output_path }}'`"
-logger --id=$$ --tag {{ script_name }} 'Moved: {{ temp_path }} -> {{ output_path }}'
-\
-''').render(script_name=SCRIPT_NAME,
-            input_path=input_path,
-            temp_path=temp_path,
-            output_path=output_path,
-            stream_indexes=stream_indexes,
-            out_format=OUT_FORMAT)
+-f {format_name} \
+'{temp_path}' 2> /tmp/{script_name}-error.log
+logger --id=$$ --tag {script_name} 'Finished: {input_path} -> {temp_path}'
+logger --id=$$ --tag {script_name} 'Trying: {temp_path} -> {output_path}'
+logger --id=$$ --tag {script_name} "Moving: `mv -v '{temp_path}' '{output_path}'`"
+logger --id=$$ --tag {script_name} 'Moved: {temp_path} -> {output_path}'\
+'''.format(script_name=SCRIPT_NAME,
+           input_path=input_path,
+           temp_path=temp_path,
+           output_path=output_path,
+           format_name=format_name)
 
     syslog(LOG_DEBUG, 'Task: {}'.format(task))
 
