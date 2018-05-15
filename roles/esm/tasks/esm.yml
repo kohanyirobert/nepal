@@ -14,7 +14,7 @@
 
 - name: creating ez server monitor conf.json
   template:
-    src: conf.json.j2
+    src: esm.config.json.j2
     dest: '{{ esm_dir }}/conf/esm.config.json'
 
 - name: allowing access for www user
