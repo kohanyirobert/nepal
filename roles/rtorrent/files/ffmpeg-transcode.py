@@ -128,7 +128,7 @@ logger --id=$$ --tag {script_name} 'Moved: {temp_path} -> {output_path}'\
     syslog(LOG_DEBUG, 'Task: {}'.format(task))
 
     try:
-        run(['at', '-M', 'now'], check=True, input=task.encode())
+        run(['at', '-M', '-b'], check=True, input=task.encode())
         syslog(LOG_DEBUG, 'Successfully scheduled task')
     except CalledProcessError as ex:
         syslog(LOG_ERR, 'Failed schedule task: {}'.format(ex))
