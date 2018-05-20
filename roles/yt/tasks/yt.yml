@@ -1,0 +1,59 @@
+- name: making sure we can use https with apt
+  apt:
+    name: apt-transport-https
+
+- name: importing apt public key for nodesource
+  apt_key:
+    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+
+- name: adding apt sources list entry for nodejs (deb)
+  apt_repository:
+    repo: deb https://deb.nodesource.com/node_8.x stretch main
+    filename: nodesource
+
+- name: adding apt sources list entry for nodejs (deb-src)
+  apt_repository:
+    repo: deb-src https://deb.nodesource.com/node_8.x stretch main
+    filename: nodesource
+
+- name: installing nodejs
+  apt:
+    name: nodejs
+    update_cache: yes
+
+- name: cloning yt repository
+  git:
+    repo: '{{ yt_git_repo }}'
+    dest: '{{ yt_dir }}'
+    version: '{{ yt_git_version }}'
+    force: yes
+
+- name: installing npm dependencies
+  command: npm install
+  args:
+    chdir: '{{ yt_dir }}'
+
+- name: allowing access for www and shared group
+  file:
+    path: '{{ yt_dir }}'
+    owner: '{{ www_user }}'
+    group: '{{ shared_group }}'
+    mode: u=rwx,g=rwx,o=rx
+    state: directory
+    recurse: yes
+
+- name: creating yt service
+  template:
+    src: yt.service.j2
+    dest: /etc/systemd/system/yt.service
+
+- name: making sure yt is restarted
+  service:
+    name: yt
+    enabled: yes
+    state: restarted
+
+- name: reloading nginx
+  service:
+    name: nginx
+    state: reloaded

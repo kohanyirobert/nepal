@@ -1,0 +1,15 @@
+[Unit]
+Description=yt Service
+After=network.target
+
+[Service]
+Type=forking
+KillMode=none
+ExecStart=/usr/bin/screen -d -m -fa -S yt /usr/bin/node {{ yt_dir }}/main.js
+ExecStop=/usr/bin/killall --wait --signal SIGINT /usr/bin/node
+WorkingDirectory={{ yt_dir }}
+User={{ www_user }}
+Group={{ shared_group }}
+
+[Install]
+WantedBy=multi-user.target

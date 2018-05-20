@@ -48,3 +48,7 @@ fail2ban_git_repo: '{{ vault_fail2ban_git_repo }}'
 fail2ban_git_version: '{{ vault_fail2ban_git_version }}'
 
 sshd_external_port: '{{ vault_sshd_external_port }}'
+
+yt_dir: '{{ vault_yt_dir }}'
+yt_git_repo: '{{ vault_yt_git_repo }}'
+yt_git_version: '{{ vault_yt_git_version }}'
