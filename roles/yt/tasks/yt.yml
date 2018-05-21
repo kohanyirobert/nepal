@@ -1,3 +1,8 @@
+- name: installing youtube-dl
+  pip:
+    name: youtube_dl
+    extra_args: --upgrade
+
 - name: making sure we can use https with apt
   apt:
     name: apt-transport-https
